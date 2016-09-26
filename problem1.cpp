@@ -1,37 +1,43 @@
 #include "problem1.h"
 #include "problem1Driver.h"
-// void problem1::monitor() {
-	// cout << "@" << sc_time_stamp() << clock << " " << " in 1: " << in1 <<" in 2:" << in2<< " in3: " << in3<< " load1: "  << load1 << " load2: " << load2 <<" dec1: " << dec1 << " dec2: " << dec2 << " count1: " << count1 << " count2: " << count2 << endl;
 
-
-// }
 
 void problem1::process() {
-	if (clock) {
+	// ended = 0; 
+	if (clock ) {
+		bool isTheSame = (count1.read() == count2.read());
 
-		// bool isTheSame = load1.read() == load2.read();
-		// if (load1.read()) {
-		// 	count1.write(in1.read());
-		// }
+		if (load1.read()) {
+			lc1 = in1.read();
+		}  
 
-		// if (dec1.read() && !isTheSame) {
-		// 	count1.write(count1.read() - 1);
-		// }
+		if(lc1 == 0){
+			ended.write(1);
+		}else if (dec1.read() && !isTheSame) {
+			lc1 -= 1; 
 
-		// if (load2.read()) {
-		// 	count2.write(in2.read());
-		// }
+		}
+		
+		if (load2.read()) {
+			lc2 = in2.read();
+		}
 
-		// if (dec2.read() && !isTheSame) {
-		// 	count2.write(count2.read() - in3.read());
-		// }
+		if(lc2 < in3.read()){
+			lc2 = 0;
+			ended.write(1);
+		}
+		else if (dec2.read() && !isTheSame) {
+			lc2 -= in3.read();
+		}
 
-		// if (count1.read() == count2.read()) {
-		// 	ended.write(1);
-		// }
 
+		if (lc1 == lc2) {
+			ended.write(1);
+		}
+
+		count1.write(lc1);
+		count2.write(lc2);
 	}
-
 }
 
 
@@ -46,7 +52,6 @@ int sc_main(int argc, char* argv[]) {
 	sc_signal<sc_uint<8>> count1, count2;
 	sc_signal<bool> ended;
 
-
 	driver.in1(in1);
 	driver.in2(in2);
 	driver.in3(in3);
@@ -54,6 +59,7 @@ int sc_main(int argc, char* argv[]) {
 	driver.dec2(dec2);
 	driver.load1(load1);
 	driver.load2(load2);
+
 
 	model1.clock(td);
 	model1.dec1(dec1);
@@ -76,6 +82,7 @@ int sc_main(int argc, char* argv[]) {
 	sc_trace(wf, load2, "load2");
 	sc_trace(wf, dec1, "dec1");
 	sc_trace(wf, dec2, "dec2");
+	sc_trace(wf, ended, "ended");
 	sc_trace(wf, count1, "count1");
 	sc_trace(wf, count2, "count2");
 

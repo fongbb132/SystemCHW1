@@ -1,8 +1,6 @@
 #include "problem2.h"
 #include "problem2Driver.h"
 void problem2::process() {
-	//synchronous reset, clear and clock
-
 
 	if (!reset) {
 		payload = 0;
@@ -56,7 +54,6 @@ int sc_main(int argc, char* argv[]) {
 	
 	driver.clear(clear);
 	driver.inData(indata);
-	//model.clk(clk);
 	reset = 1; 
 	model.clk(td);
 	model.reset(reset);
@@ -82,10 +79,6 @@ int sc_main(int argc, char* argv[]) {
 
 	sc_start(100, SC_NS);
 	sc_close_vcd_trace_file(wf);
-
-
-	getchar();
-
 
 	return 0;
 
